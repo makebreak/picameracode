@@ -3,7 +3,7 @@ from pyparticleio.ParticleCloud import ParticleCloud
 import picamera, datetime, time, os, os.path
 from time import strftime
 
-access_token = "7194c612c12123160921e81ebdd7c36fd6bc2460"
+access_token = "TOKEN"
 particle_cloud = ParticleCloud(access_token)
 
 def takeVideo(eventData):
@@ -13,7 +13,7 @@ def takeVideo(eventData):
 
     #make file
     dirString = os.getcwd()
-    data_folder = os.path.join(dirString,"ShareBoxVideos",datestring)
+    data_folder = os.path.join(dirString,"Videos",datestring)
     my_file = open(data_folder+'.h264', 'wb')
 
     #take video
