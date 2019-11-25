@@ -1,10 +1,17 @@
 #!/usr/bin/env python3
 from pyparticleio.ParticleCloud import ParticleCloud
-import picamera, datetime, time, os, os.path
+import picamera, datetime, time, os, os.path, subprocess
+import RPi.GPIO as GPIO
 from time import strftime
 
 access_token = "TOKEN"
 particle_cloud = ParticleCloud(access_token)
+
+# LED settings
+chan_list = [19,37]
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(chan_list, GPIO.OUT)
 
 def takeVideo(eventData):
     #date to string
@@ -19,7 +26,7 @@ def takeVideo(eventData):
     #take video
     camera = picamera.PiCamera()
     camera.resolution = (640, 480)
-    camera.start_recording(datestring+'.h264')
+    camera.start_recording(my_file)
     camera.wait_recording(10)
     camera.stop_recording()
 
@@ -28,9 +35,13 @@ def takeVideo(eventData):
     my_file.close()
     camera.close()
     
-    # Move file to folder, requires import shutil
-    # Using os.path.join instead
-    # shutil.move(('/home/pi/'+datestring+'.h264'), '/home/pi/ShareBoxVideos/'+datestring+'.h264')
+    # turn off light
+     GPIO.output(chan_list, False)
+    
+    # Sync with GoogleDrive
+    # make sure to copy rclone.config file to root folder if running service as root 
+    subprocess.run(args="rclone sync /home/pi/ShareBoxVideos sbTest:folder", shell=True)
+
 
 particle_cloud.quit.subscribe("doorOpen",(takeVideo))
 
